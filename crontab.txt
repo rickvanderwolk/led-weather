@@ -1,0 +1,2 @@
+# sleep 60 seconds to wait for network connection
+@reboot sleep 60 && sudo python /home/wolk/main.py
