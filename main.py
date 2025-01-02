@@ -189,7 +189,7 @@ try:
                 else:
                     # always show some light
                     if cloud_percentage == 100:
-                        cloud_percentage = 99
+                        cloud_percentage = 98
                     simulate_night(cloud_percentage)
         else:
             clear_strip()
