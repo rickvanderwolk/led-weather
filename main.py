@@ -154,49 +154,51 @@ def simulate_thunderstorm():
     else:
         simulate_rain('hard')
 
-last_weather_update = 0
-sunrise, sunset, weather_condition, cloud_percentage = None, None, None, None
+while True:
+    try:
+        last_weather_update = 0
+        sunrise, sunset, weather_condition, cloud_percentage = None, None, None, None
 
-try:
-    while True:
-        current_time = time.time()
-        if current_time - last_weather_update > WEATHER_UPDATE_INTERVAL:
-            if TEST_MODE_IS_ON:
-                sunrise, sunset, weather_condition, cloud_percentage = get_test_data()
-            else:
-                sunrise, sunset, weather_condition, cloud_percentage = get_weather_data()
-
-            print(f"Testmode: {TEST_MODE_IS_ON}, Timestamp: {current_time}, Sunrise: {sunrise}, Sunset: {sunset}, Weather condition: {weather_condition}, Cloud percentage: {cloud_percentage}")
-            last_weather_update = current_time
-
-        if weather_condition and sunrise and sunset and cloud_percentage:
-            now = datetime.datetime.now()
-
-            is_daytime = sunrise <= now <= sunset
-            strip.setBrightness(LED_STRIP_DEFAULT_BRIGHTNESS if is_daytime else round(LED_STRIP_DEFAULT_BRIGHTNESS / 10))
-
-            if weather_condition == 'Drizzle':
-                simulate_rain('soft')
-            elif weather_condition == 'Rain':
-                simulate_rain()
-            elif weather_condition == 'Rainbow':
-                simulate_rainbow()
-            elif weather_condition == 'Thunderstorm':
-                simulate_thunderstorm()
-            else:
-                if is_daytime:
-                    simulate_sunlight(cloud_percentage)
+        while True:
+            current_time = time.time()
+            if current_time - last_weather_update > WEATHER_UPDATE_INTERVAL:
+                if TEST_MODE_IS_ON:
+                    sunrise, sunset, weather_condition, cloud_percentage = get_test_data()
                 else:
-                    # always show some light
-                    if cloud_percentage == 100:
-                        cloud_percentage = 98
-                    simulate_night(cloud_percentage)
-        else:
-            clear_strip()
+                    sunrise, sunset, weather_condition, cloud_percentage = get_weather_data()
 
-except KeyboardInterrupt:
-    clear_strip()
+                print(f"Testmode: {TEST_MODE_IS_ON}, Timestamp: {current_time}, Sunrise: {sunrise}, Sunset: {sunset}, Weather condition: {weather_condition}, Cloud percentage: {cloud_percentage}")
+                last_weather_update = current_time
 
-except BaseException as e:
-    simulate_error()
-    print(e)
+            if weather_condition and sunrise and sunset and cloud_percentage:
+                now = datetime.datetime.now()
+                is_daytime = sunrise <= now <= sunset
+                strip.setBrightness(LED_STRIP_DEFAULT_BRIGHTNESS if is_daytime else round(LED_STRIP_DEFAULT_BRIGHTNESS / 10))
+
+                if weather_condition == 'Drizzle':
+                    simulate_rain('soft')
+                elif weather_condition == 'Rain':
+                    simulate_rain()
+                elif weather_condition == 'Rainbow':
+                    simulate_rainbow()
+                elif weather_condition == 'Thunderstorm':
+                    simulate_thunderstorm()
+                else:
+                    if is_daytime:
+                        simulate_sunlight(cloud_percentage)
+                    else:
+                        # always show some light
+                        if cloud_percentage == 100:
+                            cloud_percentage = 98
+                        simulate_night(cloud_percentage)
+            else:
+                clear_strip()
+
+    except KeyboardInterrupt:
+        clear_strip()
+        break
+
+    except BaseException as e:
+        simulate_error()
+        print(f"Error: {e}")
+        time.sleep(WEATHER_UPDATE_INTERVAL)
