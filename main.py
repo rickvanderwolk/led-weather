@@ -187,9 +187,9 @@ while True:
                     if is_daytime:
                         simulate_sunlight(cloud_percentage)
                     else:
-                        # always show some light
-                        if cloud_percentage == 100:
-                            cloud_percentage = 98
+                        # always show some light - max 75% dark
+                        if cloud_percentage > 75:
+                            cloud_percentage = 75
                         simulate_night(cloud_percentage)
             else:
                 clear_strip()
